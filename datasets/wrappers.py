@@ -87,19 +87,27 @@ def resize_fn(img, size):
 def resize_video(video, nFrames, scale, size):
     new_video = []
     for i in range(nFrames):
-        new_video.append(transforms.ToTensor()(transforms.Resize(size, Image.BICUBIC)(transforms.ToPILImage()(video[:,i,:,:]))))
+        new_video.append(transforms.ToTensor()(transforms.Resize(size, Image.BICUBIC)(transforms.ToPILImage()(video[:,int(i*scale),:,:]))))
     return torch.stack(new_video).permute(1,0,2,3)
+
 
 @register('sr-implicit-video-downsampled')
 class SRImplicitVideoDownsampled(Dataset):
-    def __init__(self, dataset, inp_size=None, scale_min=1, scale_max=None,
-                 augment=False, sample_q=None, batch_size=1):
+    def __init__(self, dataset,  temporal_scale_min=1, temporal_scale_max=None,
+                 spatial_scale_min=1, spatial_scale_max=None,
+                 augment=False, sample_q=None):
         self.dataset = dataset
-        self.inp_size = inp_size
-        self.scale_min = scale_min
-        if scale_max is None:
-            scale_max = scale_min
-        self.scale_max = scale_max
+
+        self.temporal_scale_min = temporal_scale_min
+        if temporal_scale_max is None:
+            temporal_scale_max = temporal_scale_min
+        self.temporal_scale_max = temporal_scale_max
+
+        self.spatial_scale_min = spatial_scale_min
+        if spatial_scale_max is None:
+            spatial_scale_max = spatial_scale_min
+        self.spatial_scale_max = spatial_scale_max
+
         self.augment = augment
         self.sample_q = sample_q
 
@@ -108,25 +116,18 @@ class SRImplicitVideoDownsampled(Dataset):
 
     def __getitem__(self, idx):
         video = self.dataset[idx]
-        s = random.uniform(self.scale_min, self.scale_max)
+        spatial_s = random.uniform(self.spatial_scale_min, self.spatial_scale_max)
+        temporal_s = random.uniform(self.temporal_scale_min, self.temporal_scale_max)
+        
+        h_lr = math.floor(video.shape[-2] / spatial_s + 1e-9)
+        w_lr = math.floor(video.shape[-1] / spatial_s + 1e-9)
+        t_lr = math.ceil(video.shape[-3] / temporal_s + 1e-9)
+        
+        video = video[:, :round(t_lr * temporal_s), :round(h_lr * spatial_s), :round(w_lr * spatial_s)] # assume round int
+        video_down = resize_video(video, t_lr, temporal_s, (h_lr, w_lr))
+        crop_lr, crop_hr = video_down, video
 
-        if self.inp_size is None:
-            h_lr = math.floor(video.shape[-2] / s + 1e-9)
-            w_lr = math.floor(video.shape[-1] / s + 1e-9)
-            t_lr = math.floor(video.shape[-3] / s + 1e-9)
-
-            video = video[:, :round(t_lr * s), :round(h_lr * s), :round(w_lr * s)] # assume round int
-            video_down = resize_video(video, t_lr, s, (h_lr, w_lr))
-            crop_lr, crop_hr = video_down, video
-        else:
-            w_lr = self.inp_size
-            w_hr = round(w_lr * s)
-            x0 = random.randint(0, video.shape[-2] - w_hr)
-            y0 = random.randint(0, video.shape[-1] - w_hr)
-            crop_hr = video[:, x0: x0 + w_hr, y0: y0 + w_hr]
-            crop_lr = resize_fn(crop_hr, w_lr)
-
-        if self.augment:
+        if self.augment: #data augmentation
             hflip = random.random() < 0.5
             vflip = random.random() < 0.5
             dflip = random.random() < 0.5

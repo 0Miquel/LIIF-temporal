@@ -6,7 +6,10 @@ train_dataset:
   wrapper:
     name: sr-implicit-video-downsampled
     args:
-      scale_min: 2
+      temporal_scale_min: 2
+      spatial_scale_max: 2
+      sample_q: 2304
+      augment: true
   batch_size: 1
 
 val_dataset:
@@ -17,7 +20,9 @@ val_dataset:
   wrapper:
     name: sr-implicit-video-downsampled
     args:
-      scale_min: 2
+      temporal_scale_min: 2
+      spatial_scale_max: 2
+      sample_q: 2304
   batch_size: 1
 
 data_norm:
@@ -41,7 +46,7 @@ optimizer:
   name: adam
   args:
     lr: 1.e-4
-epoch_max: 30
+epoch_max: 200
 multi_step_lr:
   milestones: [200, 400, 600, 800]
   gamma: 0.5

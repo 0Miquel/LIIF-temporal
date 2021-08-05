@@ -3,6 +3,8 @@ save/
 load/
 input/
 output/
+scripts/
+pths/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

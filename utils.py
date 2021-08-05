@@ -114,6 +114,8 @@ def make_coord(shape, ranges=None, flatten=True):
     ret = torch.stack(torch.meshgrid(*coord_seqs), dim=-1)
     if flatten:
         ret = ret.view(-1, ret.shape[-1])
+        #ret = torch.stack(sorted(ret, key=lambda x: (x[1], x[2])))
+
     return ret
 
 
@@ -122,7 +124,7 @@ def to_pixel_samples(img):
         img: Tensor, (3, H, W)
     """
     if len(img.shape) == 4:
-        coord = make_coord(img.shape[-3:])
+        coord = make_coord((img.shape[-2], img.shape[-1], img.shape[-3]))
     else:
         coord = make_coord(img.shape[-2:])
     rgb = img.view(3, -1).permute(1, 0)

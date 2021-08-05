@@ -9,7 +9,7 @@ train_dataset:
       temporal_scale_min: 2
       temporal_scale_max: 3
       sample_q: 2304
-      #augment: true
+      augment: true
   batch_size: 1
 
 val_dataset:
@@ -42,14 +42,16 @@ model:
         out_dim: 3
         hidden_list: [256, 256, 256, 256]
 
+resume: ./models/temporal-3d-190epo-3767.pth
+
 optimizer:
   name: adam
   args:
     lr: 1.e-4
-epoch_max: 1000
+epoch_max: 500
 multi_step_lr:
-  milestones: [200, 400, 600, 800]
+  milestones: [100, 200, 300, 400]
   gamma: 0.5
 
 epoch_val: 1
-epoch_save: 50
+epoch_save: 25

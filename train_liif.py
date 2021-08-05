@@ -62,7 +62,7 @@ def make_data_loaders():
 
 
 def prepare_training():
-    if config.get('resume') is not None:
+    if config.get('resume') is not None: #already trained model
         sv_file = torch.load(config['resume'])
         model = models.make(sv_file['model'], load_sd=True).cuda()
         optimizer = utils.make_optimizer(
@@ -209,24 +209,24 @@ def main(config_, save_path):
 
 
 if __name__ == '__main__':
-    #parser = argparse.ArgumentParser()
-    #parser.add_argument('--config')
-    #parser.add_argument('--name', default=None)
-    #parser.add_argument('--tag', default=None)
-    #parser.add_argument('--gpu', default='0')
-    #args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', default="./configs/train-temporal/train_temporal.yaml")
+    parser.add_argument('--name', default=None)
+    parser.add_argument('--tag', default=None)
+    parser.add_argument('--gpu', default='0')
+    args = parser.parse_args()
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = "0"
-    config = "./configs/train-temporal/train_temporal.yaml"
-    with open(config, 'r') as f:
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
+
+    with open(args.config, 'r') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
         print('config loaded.')
 
-    save_name = "train-temporal"
+    save_name = args.name
     if save_name is None:
-        save_name = '_' + config.split('/')[-1][:-len('.yaml')]
-    """if args.tag is not None:
-        save_name += '_' + args.tag"""
+        save_name = '_' + args.config.split('/')[-1][:-len('.yaml')]
+    if args.tag is not None:
+        save_name += '_' + args.tag
     save_path = os.path.join('./save', save_name)
 
     main(config, save_path)

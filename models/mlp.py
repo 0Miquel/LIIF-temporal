@@ -13,6 +13,7 @@ class MLP(nn.Module):
         for hidden in hidden_list:
             layers.append(nn.Linear(lastv, hidden))
             layers.append(nn.ReLU())
+            #layers.append(nn.Dropout(0.5))
             lastv = hidden
         layers.append(nn.Linear(lastv, out_dim))
         self.layers = nn.Sequential(*layers)

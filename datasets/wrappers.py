@@ -11,6 +11,7 @@ from torchvision import transforms
 from datasets import register
 from utils import to_pixel_samples
 
+import matplotlib.pyplot as plt
 
 @register('sr-implicit-paired')
 class SRImplicitPaired(Dataset):
@@ -117,7 +118,7 @@ class SRImplicitVideoDownsampled(Dataset):
     def __getitem__(self, idx):
         video = self.dataset[idx]
         spatial_s = random.uniform(self.spatial_scale_min, self.spatial_scale_max)
-        temporal_s = random.uniform(self.temporal_scale_min, self.temporal_scale_max)
+        temporal_s = random.randint(self.temporal_scale_min, self.temporal_scale_max)
         
         h_lr = math.floor(video.shape[-2] / spatial_s + 1e-9)
         w_lr = math.floor(video.shape[-1] / spatial_s + 1e-9)
@@ -131,6 +132,7 @@ class SRImplicitVideoDownsampled(Dataset):
             hflip = random.random() < 0.5
             vflip = random.random() < 0.5
             dflip = random.random() < 0.5
+            tflip = random.random() < 0.5
 
             def augment(x):
                 if hflip:
@@ -139,6 +141,8 @@ class SRImplicitVideoDownsampled(Dataset):
                     x = x.flip(-1)
                 if dflip:
                     x = x.transpose(-2, -1)
+                if tflip:
+                    x = x.flip(-3)
                 return x
 
             crop_lr = augment(crop_lr)

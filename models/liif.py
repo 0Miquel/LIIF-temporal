@@ -67,7 +67,6 @@ class LIIF(nn.Module):
         rx = 2 / feat.shape[-2] / 2
         ry = 2 / feat.shape[-1] / 2
 
-        # ME HE QUEDADO AQUÍ
         feat_coord = make_coord(feat.shape[-3:], flatten=False).cuda() \
             .permute(3,0,1,2) \
             .unsqueeze(0).expand(feat.shape[0], 3, *feat.shape[-3:])

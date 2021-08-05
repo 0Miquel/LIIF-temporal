@@ -1,7 +1,9 @@
 # LIIF-temporal
 Temporal adaptation of LIIF.
 
-Original work [github](https://github.com/yinboc/liif):
+# Original work:
+
+[Github](https://github.com/yinboc/liif)
 
 [Learning Continuous Image Representation with Local Implicit Image Function](https://arxiv.org/abs/2012.09161)
 

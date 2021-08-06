@@ -30,6 +30,30 @@ class VideoImageFolder(Dataset):
     def __getitem__(self, idx):
         return self.files[idx]
 
+@register('vimeo-image-folder')
+class VimeoImageFolder(Dataset):
+    def __init__(self, root_path):
+        self.files = []
+        folders = sorted(os.listdir(root_path))
+        for folder in folders:
+            sequences = sorted(os.listdir(os.path.join(root_path, folder)))
+            for sequence in sequences:
+                path = os.path.join(root_path, folder, sequence)
+                self.files.append(path)
+
+    def __len__(self):
+        return len(self.files)
+
+    def __getitem__(self, idx):
+        sequence_path = self.files[idx]
+        frames = sorted(os.listdir(sequence_path))
+        sequence = []
+        for frame in frames:
+            file = os.path.join(sequence_path, frame)
+            sequence.append(transforms.ToTensor()(Image.open(file).convert('RGB')))
+
+        return torch.stack(sequence).permute(1,0,2,3)
+
 
 @register('image-folder')
 class ImageFolder(Dataset):

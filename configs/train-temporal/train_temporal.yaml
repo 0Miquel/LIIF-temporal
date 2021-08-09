@@ -7,7 +7,7 @@ train_dataset:
     name: sr-implicit-video-downsampled
     args:
       temporal_scale_min: 2
-      #temporal_scale_max: 3
+      temporal_scale_max: 3
       sample_q: 2304
       augment: true
   batch_size: 1

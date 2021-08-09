@@ -2,12 +2,12 @@ train_dataset:
   dataset:
     name: vimeo-image-folder #video-image-folder
     args:
-      root_path: ./load/train-temporal/train
+      root_path: /content/vime_low_resolution/train #./load/train-temporal/train
   wrapper:
     name: sr-implicit-video-downsampled
     args:
       temporal_scale_min: 2
-      #temporal_scale_max: 3
+      temporal_scale_max: 3
       sample_q: 2304
       augment: true
   batch_size: 1
@@ -16,12 +16,12 @@ val_dataset:
   dataset:
     name: vimeo-image-folder
     args:
-      root_path: ./load/train-temporal/val
+      root_path: /content/vime_low_resolution/val #./load/train-temporal/val
   wrapper:
     name: sr-implicit-video-downsampled
     args:
       temporal_scale_min: 2
-      #temporal_scale_max: 3
+      temporal_scale_max: 3
       sample_q: 2304
   batch_size: 1
 
@@ -33,7 +33,7 @@ model:
   name: liif
   args:
     encoder_spec:
-      name: edsr-baseline
+      name: rdn
       args:
         no_upsampling: true
     imnet_spec:

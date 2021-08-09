@@ -16,7 +16,8 @@ class RDB_Conv(nn.Module):
         Cin = inChannels
         G  = growRate
         self.conv = nn.Sequential(*[
-            nn.Conv2d(Cin, G, kSize, padding=(kSize-1)//2, stride=1),
+            #nn.Conv2d(Cin, G, kSize, padding=(kSize-1)//2, stride=1),
+            nn.Conv3d(Cin, G, kSize, padding=(kSize - 1) // 2, stride=1),
             nn.ReLU()
         ])
 
@@ -37,7 +38,8 @@ class RDB(nn.Module):
         self.convs = nn.Sequential(*convs)
 
         # Local Feature Fusion
-        self.LFF = nn.Conv2d(G0 + C*G, G0, 1, padding=0, stride=1)
+        self.LFF = nn.Conv3d(G0 + C * G, G0, 1, padding=0, stride=1)
+        #self.LFF = nn.Conv2d(G0 + C*G, G0, 1, padding=0, stride=1)
 
     def forward(self, x):
         return self.LFF(self.convs(x)) + x
@@ -57,8 +59,10 @@ class RDN(nn.Module):
         }[args.RDNconfig]
 
         # Shallow feature extraction net
-        self.SFENet1 = nn.Conv2d(args.n_colors, G0, kSize, padding=(kSize-1)//2, stride=1)
-        self.SFENet2 = nn.Conv2d(G0, G0, kSize, padding=(kSize-1)//2, stride=1)
+        #self.SFENet1 = nn.Conv2d(args.n_colors, G0, kSize, padding=(kSize-1)//2, stride=1)
+        #self.SFENet2 = nn.Conv2d(G0, G0, kSize, padding=(kSize-1)//2, stride=1)
+        self.SFENet1 = nn.Conv3d(args.n_colors, G0, kSize, padding=(kSize-1)//2, stride=1)
+        self.SFENet2 = nn.Conv3d(G0, G0, kSize, padding=(kSize-1)//2, stride=1)
 
         # Redidual dense blocks and dense feature fusion
         self.RDBs = nn.ModuleList()
@@ -69,8 +73,10 @@ class RDN(nn.Module):
 
         # Global Feature Fusion
         self.GFF = nn.Sequential(*[
-            nn.Conv2d(self.D * G0, G0, 1, padding=0, stride=1),
-            nn.Conv2d(G0, G0, kSize, padding=(kSize-1)//2, stride=1)
+            #nn.Conv2d(self.D * G0, G0, 1, padding=0, stride=1),
+            #nn.Conv2d(G0, G0, kSize, padding=(kSize-1)//2, stride=1)
+            nn.Conv3d(self.D * G0, G0, 1, padding=0, stride=1),
+            nn.Conv3d(G0, G0, kSize, padding=(kSize - 1) // 2, stride=1)
         ])
 
         if args.no_upsampling:

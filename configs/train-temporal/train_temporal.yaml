@@ -33,7 +33,7 @@ model:
   name: liif
   args:
     encoder_spec:
-      name: rdn
+      name: edsr-baseline
       args:
         no_upsampling: true
     imnet_spec:

@@ -1,5 +1,5 @@
 # LIIF-temporal
-Temporal adaptation of LIIF. Adaptation implemented with EDSR encoder so far.
+Temporal adaptation of LIIF. Adaptation implemented with EDSR encoder.
 
 # Original work:
 
